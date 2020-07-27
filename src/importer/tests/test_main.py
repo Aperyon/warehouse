@@ -24,9 +24,9 @@ def test_correct_transaction_message(raw_transaction_dict):
     expected_transaction_message = TransactionMessage(
         transaction_id=uuid.UUID("cacedece-bee3-414d-a252-d37ad0443608"),
         event_type="SALE",
-        datetime=dt.datetime(2020, 7, 27, 12, tzinfo=dt.timezone.utc),
-        store_id=1,
-        item_id=2,
+        date=dt.datetime(2020, 7, 27, 12, tzinfo=dt.timezone.utc),
+        store_number=1,
+        item_number=2,
         value=3,
     )
     assert main.get_transaction_message(raw_transaction_dict) == expected_transaction_message

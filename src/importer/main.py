@@ -46,9 +46,9 @@ def get_transaction_message(row_data):
         return TransactionMessage(
             transaction_id=uuid.UUID(row_data["transaction_id"]),
             event_type=row_data["event_type"].upper(),
-            datetime=parse_date(row_data["date"]),
-            store_id=row_data["store_number"],
-            item_id=row_data["item_number"],
+            date=parse_date(row_data["date"]),
+            store_number=row_data["store_number"],
+            item_number=row_data["item_number"],
             value=row_data["value"],
         )
     except (ValueError, TypeError, KeyError) as e:

@@ -19,18 +19,18 @@ class TransactionMessage:
     ]
     transaction_id = attr.ib(validator=attr.validators.instance_of(uuid.UUID))
     event_type = attr.ib(validator=event_type_validator)
-    datetime = attr.ib(validator=attr.validators.instance_of(dt.datetime))
-    store_id = attr.ib(validator=attr.validators.instance_of(int), converter=int)
-    item_id = attr.ib(validator=attr.validators.instance_of(int), converter=int)
+    date = attr.ib(validator=attr.validators.instance_of(dt.datetime))
+    store_number = attr.ib(validator=attr.validators.instance_of(int), converter=int)
+    item_number = attr.ib(validator=attr.validators.instance_of(int), converter=int)
     value = attr.ib(validator=attr.validators.instance_of(int), converter=int)
 
     def serialize(self):
         return {
             "transaction_id": str(self.transaction_id),
             "event_type": self.event_type,
-            "datetime": self.datetime.isoformat(),
-            "store_id": self.store_id,
-            "item_id": self.item_id,
+            "date": self.date.isoformat(),
+            "store_number": self.store_number,
+            "item_number": self.item_number,
             "value": self.value,
         }
 
