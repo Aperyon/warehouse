@@ -1,15 +1,20 @@
 import json
+import logging
 
 from dateutil.parser import parse as parse_date
 from kafka import KafkaConsumer
 
 from models import Transaction, session as db_session, get_or_create, Storage
 
-
+logger = logging.getLogger(__name__)
 consumer = KafkaConsumer("events")
 
 
 # TODO: handle duplicated transactions
+
+
+class NotEnoughStock(Exception):
+    pass
 
 
 def main():
@@ -49,8 +54,24 @@ def process_transaction(transaction, storage):
         _process_incoming_transaction(transaction, storage)
 
 
-def _process_sale_transaction(transaction):
-    pass
+def _process_sale_transaction(transaction, storage):
+    try:
+        _validate_stock(transaction, storage)
+    except NotEnoughStock:
+        return
+
+
+def _validate_stock(transaction, storage):
+    if storage.stock < transaction.value:
+        transaction.status = Transaction.STATUS_REJECTED
+        logger.error(
+            "Unable to sell %s of item <%s> in store <%s>, only %s left",
+            transaction.value,
+            transaction.item_id,
+            transaction.store_id,
+            storage.stock,
+        )
+        raise NotEnoughStock()
 
 
 def _process_incoming_transaction(transaction, storage):

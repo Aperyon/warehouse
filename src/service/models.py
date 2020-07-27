@@ -9,6 +9,7 @@ class Transaction(Base):
     EVENT_TYPE_INCOMING = "INCOMING"
     STATUS_PROCESSING = "PROCESSING"
     STATUS_COMPLETED = "COMPLETED"
+    STATUS_REJECTED = "REJECTED"
 
     __tablename__ = "Transactions"
 
