@@ -61,7 +61,6 @@ def get_or_create_transaction(message):
 def make_transaction_defaults(message):
     transaction_message = u.create_transaction_from_message(message)
     defaults = {
-        "transaction_id": transaction_message.transaction_id,
         "event_type": transaction_message.event_type,
         "date": transaction_message.date,
         "store_id": transaction_message.store_number,
