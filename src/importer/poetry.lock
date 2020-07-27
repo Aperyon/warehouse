@@ -1,0 +1,17 @@
+[[package]]
+category = "main"
+description = "Pure Python client for Apache Kafka"
+name = "kafka-python"
+optional = false
+python-versions = "*"
+version = "2.0.1"
+
+[metadata]
+content-hash = "041762ffa04d59e9702ffd41a0bad30c9d8cb3469e8695c5b18ef8bd8bc51fff"
+python-versions = "^3.7"
+
+[metadata.files]
+kafka-python = [
+    {file = "kafka-python-2.0.1.tar.gz", hash = "sha256:e59ad42dec8c7d54e3fbba0c1f8b54c44d92a3392d88242962d0c29803f2f6f8"},
+    {file = "kafka_python-2.0.1-py2.py3-none-any.whl", hash = "sha256:513431184ecd08e706ca53421ff23e269fc052374084b45b49640419564dd704"},
+]

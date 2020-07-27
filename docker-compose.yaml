@@ -1,0 +1,18 @@
+version: "3.8"
+services:
+  db:
+    image: postgres:13-alpine
+    volumes:
+      - "./db_data/:/var/lib/postgresql/data"
+    environment:
+      POSTGRES_PASSWORD: mysecretpassword
+      POSTGRES_DB: warehouse
+    ports:
+      - "5432:5432"
+  # service:
+  #   image: python:3.8-alpine
+  #   environment:
+  #     DB_URL: postgresql:///wordcount_dev
+  #   volumes:
+  #     - "./src/service:/service"
+  #   command: "python3 /service/main.py"
