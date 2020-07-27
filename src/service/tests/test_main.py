@@ -1,8 +1,22 @@
+import datetime as dt
 from unittest.mock import Mock
 
+import pytest
 
 import main
 from models import Transaction, Storage
+from exceptions import InvalidTransactionValue
+
+
+@pytest.fixture
+def raw_transaction():
+    return {
+        "event_type": Transaction.EVENT_TYPE_INCOMING,
+        "date": "2020-07-27T12:00:00Z",
+        "store_number": "1",
+        "item_number": "2",
+        "value": "3",
+    }
 
 
 def test_calls_for_process_transaction_for_sale(monkeypatch):
@@ -59,3 +73,38 @@ class TestProcessingSaleTransaction:
 
         assert storage.stock == 7
         assert transaction.status == Transaction.STATUS_COMPLETED
+
+
+class TestMakingTransactionDefaultsFromRaw:
+    def test_valid_raw(self, raw_transaction):
+        defaults = main.make_transaction_defaults(raw_transaction)
+        assert len(defaults.keys()) == 6
+        assert defaults["event_type"] == Transaction.EVENT_TYPE_INCOMING
+        assert defaults["date"] == dt.datetime(2020, 7, 27, 12, tzinfo=dt.timezone.utc)
+        assert defaults["store_id"] == 1
+        assert defaults["item_id"] == 2
+        assert defaults["value"] == 3
+
+    @pytest.mark.parametrize(
+        "update_keys",
+        [
+            {"event_type": "WRONG_VALUE"},
+            {"date": "WRONG_VALUE"},
+            {"store_number": "WRONG_VALUE"},
+            {"item_number": "WRONG_VALUE"},
+            {"value": "WRONG_VALUE"},
+        ],
+    )
+    def test_invalid_event_type(self, raw_transaction, update_keys):
+        raw_transaction.update(update_keys)
+        with pytest.raises(InvalidTransactionValue):
+            main.make_transaction_defaults(raw_transaction)
+
+    @pytest.mark.parametrize(
+        "missing_key", ["event_type", "date", "store_number", "item_number", "value",],
+    )
+    def test_missing_value(self, raw_transaction, missing_key):
+        raw_transaction.pop(missing_key)
+        with pytest.raises(InvalidTransactionValue):
+            main.make_transaction_defaults(raw_transaction)
+
