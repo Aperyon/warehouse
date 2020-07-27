@@ -1,5 +1,4 @@
 from sqlalchemy import Column, Integer, String, DateTime
-from sqlalchemy.orm import sessionmaker
 
 from db import Base, engine
 
@@ -30,9 +29,6 @@ class Storage(Base):
     item_id = Column(Integer)
     stock = Column(Integer)
 
-
-Session = sessionmaker(engine)
-session = Session()
 
 Base.metadata.create_all(engine)
 

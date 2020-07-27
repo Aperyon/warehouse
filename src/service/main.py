@@ -4,7 +4,8 @@ import logging
 from dateutil.parser import parse as parse_date
 from kafka import KafkaConsumer
 
-from models import Transaction, session as db_session, get_or_create, Storage
+from models import Transaction, get_or_create, Storage
+from db import session
 
 logger = logging.getLogger(__name__)
 consumer = KafkaConsumer("events")
@@ -22,10 +23,10 @@ def main():
     for raw_message in consumer:
         transaction = create_transaction(raw_message)
         storage, is_created = get_or_create(
-            db_session, Storage, store_id=transaction.store_id, item_id=transaction.item_id, defaults={"stock": 0}
+            session, Storage, store_id=transaction.store_id, item_id=transaction.item_id, defaults={"stock": 0}
         )
         process_transaction(transaction, storage)
-        db_session.commit()
+        session.commit()
 
 
 def create_transaction(raw_message):
@@ -42,7 +43,7 @@ def create_transaction(raw_message):
         "status": Transaction.STATUS_PROCESSING,
     }
     transaction, is_created = get_or_create(
-        db_session, Transaction, defaults=defaults, uuid=raw_message["transaction_id"]
+        session, Transaction, defaults=defaults, uuid=raw_message["transaction_id"]
     )
     return transaction
 
