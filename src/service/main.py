@@ -4,8 +4,9 @@ import logging
 from dateutil.parser import parse as parse_date
 from kafka import KafkaConsumer
 
-from models import Transaction, get_or_create, Storage
+from models import Transaction, Storage
 from db import session
+from db_utils import get_or_create
 
 logger = logging.getLogger(__name__)
 consumer = KafkaConsumer("events")
