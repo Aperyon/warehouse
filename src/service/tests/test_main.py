@@ -29,10 +29,10 @@ def test_process_transaction_for_incoming(monkeypatch):
 
 def test_processing_income_transaction():
     transaction = Transaction(store_id=1, item_id=1, value=3, status=Transaction.STATUS_PROCESSING)
-    storage = Storage(store_id=1, item_id=1, count=1)
+    storage = Storage(store_id=1, item_id=1, stock=1)
 
     main._process_incoming_transaction(transaction, storage)
 
     assert transaction.status == Transaction.STATUS_COMPLETED
-    assert storage.count == 4
+    assert storage.stock == 4
 

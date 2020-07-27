@@ -17,7 +17,7 @@ def main():
     for raw_message in consumer:
         transaction = create_transaction(raw_message)
         storage, is_created = get_or_create(
-            db_session, Storage, store_id=transaction.store_id, item_id=transaction.item_id, defaults={"count": 0}
+            db_session, Storage, store_id=transaction.store_id, item_id=transaction.item_id, defaults={"stock": 0}
         )
         process_transaction(transaction, storage)
         db_session.commit()
@@ -54,7 +54,7 @@ def _process_sale_transaction(transaction):
 
 
 def _process_incoming_transaction(transaction, storage):
-    storage.count += transaction.value
+    storage.stock += transaction.value
     transaction.status = transaction.STATUS_COMPLETED
 
 

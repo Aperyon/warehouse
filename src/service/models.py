@@ -27,7 +27,7 @@ class Storage(Base):
     id = Column(Integer, primary_key=True)
     store_id = Column(Integer)
     item_id = Column(Integer)
-    count = Column(Integer)
+    stock = Column(Integer)
 
 
 Session = sessionmaker(engine)
