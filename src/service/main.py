@@ -7,9 +7,9 @@ from kafka import KafkaConsumer
 from common.exceptions import NotEnoughStock, InvalidTransactionMessage
 from common import utils as u
 
-from .models import Transaction, Storage
-from .db import session
-from .db_utils import get_or_create
+from models import Transaction, Storage
+from db import session, create_all_db_tables
+from db_utils import get_or_create
 
 
 logging.basicConfig()

@@ -1,6 +1,6 @@
 from sqlalchemy import Column, Integer, String, DateTime
 
-from .db import Base, engine
+from db import Base
 
 
 class Transaction(Base):
