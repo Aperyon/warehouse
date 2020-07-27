@@ -1,4 +1,5 @@
 import datetime as dt
+import json
 from unittest.mock import Mock
 
 import pytest
@@ -17,6 +18,15 @@ def raw_transaction():
         "item_number": "2",
         "value": "3",
     }
+
+
+@pytest.fixture
+def kafka_message():
+    class KafkaMessage:
+        def __init__(self, value):
+            self.value = value.encode("utf-8")
+
+    return KafkaMessage(json.dumps({}))
 
 
 def test_calls_for_process_transaction_for_sale(monkeypatch):
@@ -75,6 +85,18 @@ class TestProcessingSaleTransaction:
         assert transaction.status == Transaction.STATUS_COMPLETED
 
 
+def test_processing_duplicate_transaction(kafka_message, monkeypatch):
+    mock_get_or_create_transaction = Mock(return_value=(Transaction, False))
+    mock_process_transaction = Mock()
+
+    monkeypatch.setattr(main, "get_or_create_transaction", mock_get_or_create_transaction)
+    monkeypatch.setattr(main, "process_transaction", mock_process_transaction)
+
+    main.process_raw_message(kafka_message)
+
+    mock_process_transaction.assert_not_called()
+
+
 class TestMakingTransactionDefaultsFromRaw:
     def test_valid_raw(self, raw_transaction):
         defaults = main.make_transaction_defaults(raw_transaction)
@@ -107,4 +129,3 @@ class TestMakingTransactionDefaultsFromRaw:
         raw_transaction.pop(missing_key)
         with pytest.raises(InvalidTransactionValue):
             main.make_transaction_defaults(raw_transaction)
-

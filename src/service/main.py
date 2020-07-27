@@ -14,9 +14,6 @@ logger = logging.getLogger(__name__)
 consumer = KafkaConsumer("events")
 
 
-# TODO: handle duplicated transactions
-
-
 def main():
     print("Waiting for messages")
     for raw_message in consumer:
@@ -26,6 +23,13 @@ def main():
 def process_raw_message(raw_message):
     message = get_message_from_raw(raw_message)
     transaction, is_created = get_or_create_transaction(message)
+
+    if not is_created:
+        # We don't care about what status is the existing transaction is in.
+        # It is a problem if it already exists.
+        logger.error("Transaction <%s> already exists, skipping", transaction.uuid)
+        return
+
     storage, is_created = get_or_create(
         session, Storage, store_id=transaction.store_id, item_id=transaction.item_id, defaults={"stock": 0}
     )
