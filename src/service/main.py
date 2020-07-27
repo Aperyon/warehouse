@@ -1,6 +1,7 @@
 import sys
 import json
 import logging
+import time
 
 from dateutil.parser import parse as parse_date, ParserError
 from kafka import KafkaConsumer
@@ -15,14 +16,24 @@ from db_utils import get_or_create
 logging.basicConfig()
 logging.root.setLevel(logging.INFO)
 logger = logging.getLogger(__name__)
-# Make sure Kafka guarantees that each message is processed only once
-consumer = KafkaConsumer("events")
 
 
 def main():
+    consumer = get_consumer()
     logger.info("Waiting for messages")
     for raw_message in consumer:
         process_raw_message(raw_message)
+
+
+def get_consumer():
+    # Make sure Kafka guarantees that each message is processed only once
+    tries = 0
+    while tries < 10:
+        tries += 1
+        try:
+            return KafkaConsumer("events", bootstrap_servers=os.environ["KAFKA_URL"])
+        except:
+            time.sleep(2)
 
 
 def process_raw_message(raw_message):
