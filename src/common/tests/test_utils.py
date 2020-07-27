@@ -3,9 +3,9 @@ import uuid
 
 import pytest
 
-import exceptions
-import utils as u
-from models import TransactionMessage
+from .. import exceptions
+from .. import utils as u
+from ..models import TransactionMessage
 
 
 @pytest.fixture

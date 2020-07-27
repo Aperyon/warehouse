@@ -3,15 +3,16 @@ import json
 from unittest.mock import Mock
 
 import pytest
+from common.exceptions import InvalidTransactionMessage
 
-import main
-from models import Transaction, Storage
-from exceptions import InvalidTransactionValue
+from .. import main
+from ..models import Transaction, Storage
 
 
 @pytest.fixture
 def raw_transaction():
     return {
+        "transaction_id": "cacedece-bee3-414d-a252-d37ad0443608",
         "event_type": Transaction.EVENT_TYPE_INCOMING,
         "date": "2020-07-27T12:00:00Z",
         "store_number": "1",
@@ -100,7 +101,6 @@ def test_processing_duplicate_transaction(kafka_message, monkeypatch):
 class TestMakingTransactionDefaultsFromRaw:
     def test_valid_raw(self, raw_transaction):
         defaults = main.make_transaction_defaults(raw_transaction)
-        assert len(defaults.keys()) == 6
         assert defaults["event_type"] == Transaction.EVENT_TYPE_INCOMING
         assert defaults["date"] == dt.datetime(2020, 7, 27, 12, tzinfo=dt.timezone.utc)
         assert defaults["store_id"] == 1
@@ -119,7 +119,7 @@ class TestMakingTransactionDefaultsFromRaw:
     )
     def test_invalid_event_type(self, raw_transaction, update_keys):
         raw_transaction.update(update_keys)
-        with pytest.raises(InvalidTransactionValue):
+        with pytest.raises(InvalidTransactionMessage):
             main.make_transaction_defaults(raw_transaction)
 
     @pytest.mark.parametrize(
@@ -127,5 +127,5 @@ class TestMakingTransactionDefaultsFromRaw:
     )
     def test_missing_value(self, raw_transaction, missing_key):
         raw_transaction.pop(missing_key)
-        with pytest.raises(InvalidTransactionValue):
+        with pytest.raises(InvalidTransactionMessage):
             main.make_transaction_defaults(raw_transaction)

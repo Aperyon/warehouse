@@ -28,9 +28,8 @@ class TransactionMessage:
         return {
             "transaction_id": str(self.transaction_id),
             "event_type": self.event_type,
-            "date": self.date.isoformat(),
+            "date": self.date.isoformat().replace("+00:00", "Z"),
             "store_number": self.store_number,
             "item_number": self.item_number,
             "value": self.value,
         }
-

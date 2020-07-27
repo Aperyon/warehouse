@@ -1,16 +1,19 @@
+import sys
 import json
 import logging
 
 from dateutil.parser import parse as parse_date, ParserError
 from kafka import KafkaConsumer
+from common.exceptions import NotEnoughStock, InvalidTransactionMessage
+from common import utils as u
 
-from models import Transaction, Storage
-from db import session
-from db_utils import get_or_create
-from exceptions import NotEnoughStock, InvalidTransactionValue
+from .models import Transaction, Storage
+from .db import session
+from .db_utils import get_or_create
 
 
 logger = logging.getLogger(__name__)
+# Make sure Kafka guarantees that each message is processed only once
 consumer = KafkaConsumer("events")
 
 
@@ -22,7 +25,11 @@ def main():
 
 def process_raw_message(raw_message):
     message = get_message_from_raw(raw_message)
-    transaction, is_created = get_or_create_transaction(message)
+
+    try:
+        transaction, is_created = get_or_create_transaction(message)
+    except InvalidTransactionMessage:
+        return
 
     if not is_created:
         # We don't care about what status is the existing transaction is in.
@@ -44,70 +51,24 @@ def get_message_from_raw(raw_message):
 
 
 def get_or_create_transaction(message):
-    raw_transaction = message
-    defaults = make_transaction_defaults(raw_transaction)
-    transaction, is_created = get_or_create(
-        session, Transaction, defaults=defaults, uuid=raw_transaction["transaction_id"]
-    )
+    defaults = make_transaction_defaults(message)
+    transaction, is_created = get_or_create(session, Transaction, defaults=defaults, uuid=message["transaction_id"])
     return transaction, is_created
 
 
-def make_transaction_defaults(raw_transaction):
+def make_transaction_defaults(message):
+    transaction_message = u.create_transaction_from_message(message)
     defaults = {
-        "event_type": get_validated_event_type(raw_transaction.get("event_type")),
-        "date": get_validated_date(raw_transaction.get("date")),
-        "store_id": get_validated_store_id(raw_transaction.get("store_number")),
-        "item_id": get_validated_item_id(raw_transaction.get("item_number")),
-        "value": get_validated_value(raw_transaction.get("value")),
+        "transaction_id": transaction_message.transaction_id,
+        "event_type": transaction_message.event_type,
+        "date": transaction_message.date,
+        "store_id": transaction_message.store_number,
+        "item_id": transaction_message.item_number,
+        "value": transaction_message.value,
         "status": Transaction.STATUS_PROCESSING,
     }
 
-    if None in defaults.values():
-        raise InvalidTransactionValue()
-
     return defaults
-
-
-def get_validated_event_type(raw_value):
-    if raw_value is None:
-        raise InvalidTransactionValue()
-
-    value = raw_value.upper()
-
-    if value not in Transaction.EVENT_TYPES:
-        raise InvalidTransactionValue()
-
-    return value
-
-
-def get_validated_date(raw_value):
-    try:
-        value = parse_date(raw_value)
-    except (ParserError, TypeError):
-        raise InvalidTransactionValue()
-
-    return value
-
-
-def get_validated_store_id(raw_value):
-    return get_validated_int_value(raw_value)
-
-
-def get_validated_item_id(raw_value):
-    return get_validated_int_value(raw_value)
-
-
-def get_validated_value(raw_value):
-    return get_validated_int_value(raw_value)
-
-
-def get_validated_int_value(raw_value):
-    try:
-        value = int(raw_value)
-    except (ValueError, TypeError):
-        raise InvalidTransactionValue()
-
-    return value
 
 
 def process_transaction(transaction, storage):

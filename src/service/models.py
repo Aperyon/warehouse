@@ -1,6 +1,6 @@
 from sqlalchemy import Column, Integer, String, DateTime
 
-from db import Base, engine
+from .db import Base, engine
 
 
 class Transaction(Base):
@@ -29,7 +29,4 @@ class Storage(Base):
     store_id = Column(Integer)
     item_id = Column(Integer)
     stock = Column(Integer)
-
-
-Base.metadata.create_all(engine)
 

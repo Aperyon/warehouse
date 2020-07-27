@@ -2,8 +2,8 @@ import uuid
 
 from dateutil.parser import parse as parse_date
 
-import exceptions
-from models import TransactionMessage
+from . import exceptions
+from .models import TransactionMessage
 
 
 def create_transaction_from_message(message):
