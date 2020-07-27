@@ -22,3 +22,21 @@ docker-compose run importer <csv_filename>
 
 Note: It may take a few seconds until kafka comes alive, so please wait before
 using the command above.
+
+# In development
+
+During development use python-virtualenv and poetry in the main projects.
+
+E.g.:
+
+```bash
+virtualenv venv
+source venv/bin/activate
+
+poetry install
+```
+
+## Testing
+
+To run tests, run `pytest` in one of the main projects, within an activated
+virtualenv.
