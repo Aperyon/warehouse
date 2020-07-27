@@ -12,6 +12,8 @@ from .db import session
 from .db_utils import get_or_create
 
 
+logging.basicConfig()
+logging.root.setLevel(logging.INFO)
 logger = logging.getLogger(__name__)
 # Make sure Kafka guarantees that each message is processed only once
 consumer = KafkaConsumer("events")

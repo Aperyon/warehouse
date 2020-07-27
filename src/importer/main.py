@@ -14,6 +14,8 @@ from common import utils as u
 
 
 producer = KafkaProducer(bootstrap_servers="localhost:9092")
+logging.basicConfig()
+logging.root.setLevel(logging.INFO)
 logger = logging.getLogger(__name__)
 
 
