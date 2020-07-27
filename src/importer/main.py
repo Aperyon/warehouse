@@ -3,6 +3,7 @@ from uuid import uuid4
 import sys
 import csv
 import json
+import logging
 
 from kafka import KafkaProducer
 
@@ -11,6 +12,7 @@ from kafka import KafkaProducer
 # TODO: make sure there is only one iteration of the file content
 # TODO: validate message
 producer = KafkaProducer(bootstrap_servers="localhost:9092")
+logger = logging.getLogger(__name__)
 
 
 EVENT_TYPE_INCOMING = "incomining"
@@ -29,7 +31,6 @@ class Message:
 
 def main():
     csv_filename = sys.argv[1]
-    print("Filename", csv_filename)
     content = parse_csv_file(csv_filename)
 
     for row_data in content:
@@ -49,7 +50,6 @@ def parse_csv_file(csv_filename):
                 row_data = {key: value for key, value in zip(keys, row)}
                 content.append(row_data)
             line_number += 1
-    print(content)
     return content
 
 
@@ -58,10 +58,9 @@ def serialize_row_data(row_data):
 
 
 def send_message(message: bytes, topic="events"):
-    print("Sending message", message)
+    logger.debug("[SENDING] %s", message)
     producer.send(topic, message)
 
 
 if __name__ == "__main__":
     main()
-
