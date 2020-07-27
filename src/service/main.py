@@ -20,23 +20,32 @@ consumer = KafkaConsumer("events")
 def main():
     print("Waiting for messages")
     for raw_message in consumer:
-        transaction = get_or_create_transaction(raw_message)
-        storage, is_created = get_or_create(
-            session, Storage, store_id=transaction.store_id, item_id=transaction.item_id, defaults={"stock": 0}
-        )
-        process_transaction(transaction, storage)
-        session.commit()
+        process_raw_message(raw_message)
 
 
-def get_or_create_transaction(raw_message):
-    raw_transaction_value = raw_message.value.decode("utf-8")
-    raw_transaction = json.loads(raw_transaction_value)
+def process_raw_message(raw_message):
+    message = get_message_from_raw(raw_message)
+    transaction, is_created = get_or_create_transaction(message)
+    storage, is_created = get_or_create(
+        session, Storage, store_id=transaction.store_id, item_id=transaction.item_id, defaults={"stock": 0}
+    )
+    process_transaction(transaction, storage)
+    session.commit()
 
+
+def get_message_from_raw(raw_message):
+    raw_message_value = raw_message.value.decode("utf-8")
+    message = json.loads(raw_message_value)
+    return message
+
+
+def get_or_create_transaction(message):
+    raw_transaction = message
     defaults = make_transaction_defaults(raw_transaction)
     transaction, is_created = get_or_create(
         session, Transaction, defaults=defaults, uuid=raw_transaction["transaction_id"]
     )
-    return transaction
+    return transaction, is_created
 
 
 def make_transaction_defaults(raw_transaction):
