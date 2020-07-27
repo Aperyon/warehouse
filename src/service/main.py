@@ -15,7 +15,7 @@ consumer = KafkaConsumer("events")
 
 
 def main():
-    print("Waiting for messages")
+    logger.info("Waiting for messages")
     for raw_message in consumer:
         process_raw_message(raw_message)
 
