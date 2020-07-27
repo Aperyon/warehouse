@@ -8,7 +8,6 @@ import logging
 from kafka import KafkaProducer
 
 
-# TODO: use kafka
 # TODO: make sure there is only one iteration of the file content
 # TODO: validate message
 producer = KafkaProducer(bootstrap_servers="localhost:9092")
