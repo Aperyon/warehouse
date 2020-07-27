@@ -60,6 +60,9 @@ def _process_sale_transaction(transaction, storage):
     except NotEnoughStock:
         return
 
+    storage.stock -= transaction.value
+    transaction.status = Transaction.STATUS_COMPLETED
+
 
 def _validate_stock(transaction, storage):
     if storage.stock < transaction.value:

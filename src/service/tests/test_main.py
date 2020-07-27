@@ -38,7 +38,7 @@ def test_processing_incoming_transaction():
 
 
 class TestProcessingSaleTransaction:
-    def test_not_enough_storage(self, monkeypatch):
+    def test_not_enough_stock(self, monkeypatch):
         mock = Mock()
         monkeypatch.setattr(main.logger, "error", mock)
 
@@ -50,3 +50,12 @@ class TestProcessingSaleTransaction:
         mock.assert_called()
         assert storage.stock == 1
         assert transaction.status == Transaction.STATUS_REJECTED
+
+    def test_enough_stock(self):
+        transaction = Transaction(store_id=1, item_id=1, value=3, status=Transaction.STATUS_PROCESSING)
+        storage = Storage(store_id=1, item_id=1, stock=10)
+
+        main._process_sale_transaction(transaction, storage)
+
+        assert storage.stock == 7
+        assert transaction.status == Transaction.STATUS_COMPLETED
