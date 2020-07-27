@@ -2,3 +2,5 @@ db_data/
 *.pyc
 venv
 .vscode
+__pycache__/
+.pytest_cache/

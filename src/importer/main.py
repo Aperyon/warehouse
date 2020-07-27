@@ -1,14 +1,19 @@
 import sys
+
+sys.path.append("..")
+
 import csv
 import json
 import logging
 import uuid
 
+
 from dateutil.parser import parse as parse_date
 from kafka import KafkaProducer
 
-from exceptions import InvalidTransactionMessage
-from models import TransactionMessage
+from common.exceptions import InvalidTransactionMessage
+from common.models import TransactionMessage
+from common import utils as u
 
 
 producer = KafkaProducer(bootstrap_servers="localhost:9092")
@@ -16,10 +21,9 @@ logger = logging.getLogger(__name__)
 
 
 def main():
-    csv_filename = sys.argv[1]
-    content = parse_csv_file(csv_filename)
+    file_name = sys.argv[1]
 
-    for row_data in content:
+    for row_data in open_csv(file_name):
         try:
             message = get_validated_message(row_data)
         except InvalidTransactionMessage:
@@ -29,30 +33,16 @@ def main():
         send_message(message)
 
 
-def parse_csv_file(csv_filename):
-    with open(csv_filename) as csv_file:
+def open_csv(file_name):
+    with open(file_name) as csv_file:
         csv_reader = csv.DictReader(csv_file, delimiter=",")
         for row in csv_reader:
             yield row
 
 
 def get_validated_message(row_data):
-    transaction_message = get_transaction_message(row_data)
+    transaction_message = u.create_transaction_from_message(row_data)
     return json.dumps(transaction_message.serialize()).encode("utf-8")
-
-
-def get_transaction_message(row_data):
-    try:
-        return TransactionMessage(
-            transaction_id=uuid.UUID(row_data["transaction_id"]),
-            event_type=row_data["event_type"].upper(),
-            date=parse_date(row_data["date"]),
-            store_number=row_data["store_number"],
-            item_number=row_data["item_number"],
-            value=row_data["value"],
-        )
-    except (ValueError, TypeError, KeyError) as e:
-        raise InvalidTransactionMessage(f"Original Exception: `{e}`")
 
 
 def send_message(message: bytes, topic="events"):
