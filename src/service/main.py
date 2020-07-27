@@ -22,7 +22,7 @@ class NotEnoughStock(Exception):
 def main():
     print("Waiting for messages")
     for raw_message in consumer:
-        transaction = create_transaction(raw_message)
+        transaction = get_or_create_transaction(raw_message)
         storage, is_created = get_or_create(
             session, Storage, store_id=transaction.store_id, item_id=transaction.item_id, defaults={"stock": 0}
         )
@@ -30,21 +30,20 @@ def main():
         session.commit()
 
 
-def create_transaction(raw_message):
-    raw_value = raw_message.value
-    value = raw_value.decode("utf-8")
-    raw_message = json.loads(value)
+def get_or_create_transaction(raw_message):
+    raw_transaction_value = raw_message.value.decode("utf-8")
+    raw_transaction = json.loads(raw_transaction_value)
 
     defaults = {
-        "event_type": raw_message["event_type"].upper(),
-        "date": parse_date(raw_message["date"]),
-        "store_id": int(raw_message["store_number"]),
-        "item_id": int(raw_message["item_number"]),
-        "value": int(raw_message["value"]),
+        "event_type": raw_transaction["event_type"].upper(),
+        "date": parse_date(raw_transaction["date"]),
+        "store_id": int(raw_transaction["store_number"]),
+        "item_id": int(raw_transaction["item_number"]),
+        "value": int(raw_transaction["value"]),
         "status": Transaction.STATUS_PROCESSING,
     }
     transaction, is_created = get_or_create(
-        session, Transaction, defaults=defaults, uuid=raw_message["transaction_id"]
+        session, Transaction, defaults=defaults, uuid=raw_transaction["transaction_id"]
     )
     return transaction
 
