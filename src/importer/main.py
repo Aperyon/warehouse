@@ -13,7 +13,7 @@ from common.models import TransactionMessage
 from common import utils as u
 
 
-producer = KafkaProducer(bootstrap_servers="localhost:9092")
+producer = KafkaProducer(bootstrap_servers=os.environ["KAFKA_URL"])
 logging.basicConfig()
 logging.root.setLevel(logging.INFO)
 logger = logging.getLogger(__name__)
