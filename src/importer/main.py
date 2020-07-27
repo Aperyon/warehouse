@@ -2,14 +2,11 @@ import sys
 import csv
 import json
 import logging
-import uuid
-
 
 from dateutil.parser import parse as parse_date
 from kafka import KafkaProducer
 
 from common.exceptions import InvalidTransactionMessage
-from common.models import TransactionMessage
 from common import utils as u
 
 
