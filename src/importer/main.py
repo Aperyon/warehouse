@@ -1,5 +1,3 @@
-from dataclasses import dataclass
-from uuid import uuid4
 import sys
 import csv
 import json
@@ -8,7 +6,6 @@ import logging
 from kafka import KafkaProducer
 
 
-# TODO: make sure there is only one iteration of the file content
 # TODO: validate message
 producer = KafkaProducer(bootstrap_servers="localhost:9092")
 logger = logging.getLogger(__name__)
@@ -16,16 +13,6 @@ logger = logging.getLogger(__name__)
 
 EVENT_TYPE_INCOMING = "incomining"
 EVENT_TYPE_SALE = "sale"
-
-
-@dataclass
-class Message:
-    transaction_id: str
-    event_type: str
-    date: str
-    store_number: int
-    item_number: int
-    value: int
 
 
 def main():
@@ -38,18 +25,10 @@ def main():
 
 
 def parse_csv_file(csv_filename):
-    content = []
-    line_number = 0
     with open(csv_filename) as csv_file:
-        csv_reader = csv.reader(csv_file, delimiter=",")
+        csv_reader = csv.DictReader(csv_file, delimiter=",")
         for row in csv_reader:
-            if line_number == 0:
-                keys = row
-            else:
-                row_data = {key: value for key, value in zip(keys, row)}
-                content.append(row_data)
-            line_number += 1
-    return content
+            yield row
 
 
 def serialize_row_data(row_data):
