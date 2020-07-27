@@ -15,10 +15,6 @@ producer = KafkaProducer(bootstrap_servers="localhost:9092")
 logger = logging.getLogger(__name__)
 
 
-EVENT_TYPE_INCOMING = "incomining"
-EVENT_TYPE_SALE = "sale"
-
-
 def main():
     csv_filename = sys.argv[1]
     content = parse_csv_file(csv_filename)
