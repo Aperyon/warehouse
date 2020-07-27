@@ -7,16 +7,14 @@ from kafka import KafkaConsumer
 from models import Transaction, Storage
 from db import session
 from db_utils import get_or_create
+from exceptions import NotEnoughStock
+
 
 logger = logging.getLogger(__name__)
 consumer = KafkaConsumer("events")
 
 
 # TODO: handle duplicated transactions
-
-
-class NotEnoughStock(Exception):
-    pass
 
 
 def main():
