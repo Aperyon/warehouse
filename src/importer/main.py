@@ -1,3 +1,4 @@
+import os
 import sys
 import csv
 import json
@@ -17,7 +18,7 @@ logger = logging.getLogger(__name__)
 
 
 def main():
-    file_name = sys.argv[1]
+    file_name = f"{os.environ['CSV_DIR']}{sys.argv[1]}"
 
     for row_data in open_csv(file_name):
         try:
