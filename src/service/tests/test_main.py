@@ -5,7 +5,7 @@ import main
 from models import Transaction, Storage
 
 
-def test_process_transaction_for_sale(monkeypatch):
+def test_calls_for_process_transaction_for_sale(monkeypatch):
     mock = Mock()
     monkeypatch.setattr(main, "_process_sale_transaction", mock)
 
@@ -16,7 +16,7 @@ def test_process_transaction_for_sale(monkeypatch):
     mock.assert_called()
 
 
-def test_process_transaction_for_incoming(monkeypatch):
+def test_calls_for_process_transaction_for_incoming(monkeypatch):
     mock = Mock()
     monkeypatch.setattr(main, "_process_incoming_transaction", mock)
 
@@ -27,7 +27,7 @@ def test_process_transaction_for_incoming(monkeypatch):
     mock.assert_called()
 
 
-def test_processing_income_transaction():
+def test_processing_incoming_transaction():
     transaction = Transaction(store_id=1, item_id=1, value=3, status=Transaction.STATUS_PROCESSING)
     storage = Storage(store_id=1, item_id=1, stock=1)
 
