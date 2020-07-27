@@ -1,3 +1,4 @@
+import os
 import json
 import logging
 import time
@@ -18,6 +19,7 @@ logger = logging.getLogger(__name__)
 
 
 def main():
+    create_all_db_tables()
     consumer = get_consumer()
     logger.info("Waiting for messages")
     for raw_message in consumer:
