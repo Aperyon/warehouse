@@ -9,3 +9,48 @@ services:
       POSTGRES_DB: warehouse
     ports:
       - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+  kafka:
+    image: spotify/kafka
+    environment:
+      TOPICS: "events,"
+      ADVERTISED_PORT: 9092
+      ADVERTISED_HOST: kafka
+    ports:
+      - "9092:9092"
+  service:
+    build:
+      context: ./src/service
+    volumes:
+      - "./src/common:/code/common"
+      - "./src/service:/code/service"
+    command: "python3 /code/service/main.py"
+    links:
+      - kafka
+      - db
+    environment:
+      DB_URL: postgres://postgres:mysecretpassword@db:5432/warehouse
+      PYTHONUNBUFFERED: 1
+      PYTHONPATH: "/code/:$PYTHONPATH"
+      KAFKA_URL: kafka:9092
+  importer:
+    build:
+      context: ./src/importer
+    volumes:
+      - "./src/common:/code/common"
+      - "./src/importer:/code/importer"
+      - "./csv_data/:/code/csv_data"
+    container_name: importer
+    entrypoint: python3 importer/main.py
+    links:
+      - kafka
+      - db
+    environment:
+      PYTHONUNBUFFERED: 1
+      PYTHONPATH: "/code/:$PYTHONPATH"
+      KAFKA_URL: kafka:9092
+      CSV_DIR: /code/csv_data/
