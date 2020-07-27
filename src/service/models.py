@@ -29,4 +29,3 @@ class Storage(Base):
     store_id = Column(Integer)
     item_id = Column(Integer)
     stock = Column(Integer)
-

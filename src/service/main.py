@@ -90,6 +90,13 @@ def process_transaction(transaction, storage):
     elif transaction.event_type == Transaction.EVENT_TYPE_INCOMING:
         _process_incoming_transaction(transaction, storage)
 
+    logger.info(
+        "Successfully executed `%s of item <%s> in store <%s>`",
+        transaction.event_type,
+        transaction.item_id,
+        transaction.store_id,
+    )
+
 
 def _process_sale_transaction(transaction, storage):
     try:
