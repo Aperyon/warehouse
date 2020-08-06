@@ -94,6 +94,14 @@ python-versions = "*"
 version = "1.0.1"
 
 [[package]]
+category = "main"
+description = "JSON log formatter"
+name = "json-log-formatter"
+optional = false
+python-versions = "*"
+version = "0.3.0"
+
+[[package]]
 category = "dev"
 description = "More routines for operating on iterables, beyond itertools"
 name = "more-itertools"
@@ -233,7 +241,7 @@ docs = ["sphinx", "jaraco.packaging (>=3.2)", "rst.linker (>=1.9)"]
 testing = ["jaraco.itertools", "func-timeout"]
 
 [metadata]
-content-hash = "801f84e2febb2add1e64cbbff38ef33f3c2ed0f7873be72bfd22b0104cc4d67c"
+content-hash = "20f0d8696ea0a2cf5af3bb345e4c630d0ef873f27ade4d26e21c6e638eba672f"
 lock-version = "1.0"
 python-versions = "^3.7"
 
@@ -269,6 +277,9 @@ importlib-metadata = [
 iniconfig = [
     {file = "iniconfig-1.0.1-py3-none-any.whl", hash = "sha256:80cf40c597eb564e86346103f609d74efce0f6b4d4f30ec8ce9e2c26411ba437"},
     {file = "iniconfig-1.0.1.tar.gz", hash = "sha256:e5f92f89355a67de0595932a6c6c02ab4afddc6fcdc0bfc5becd0d60884d3f69"},
+]
+json-log-formatter = [
+    {file = "JSON-log-formatter-0.3.0.tar.gz", hash = "sha256:ee187c9a80936cbf1259f73573973450fc24b84a4fb54e53eb0dcff86ea1e759"},
 ]
 more-itertools = [
     {file = "more-itertools-8.4.0.tar.gz", hash = "sha256:68c70cc7167bdf5c7c9d8f6954a7837089c6a36bf565383919bb595efb8a17e5"},

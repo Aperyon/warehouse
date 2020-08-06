@@ -5,6 +5,7 @@ from rest_framework.reverse import reverse
 from rest_framework import status
 
 from purchases import models as m
+from storages import models as storage_m
 
 
 @pytest.mark.django_db
@@ -32,6 +33,7 @@ class TestPurchaseCreation:
         assert storage_db.stock == 999
 
     def test_not_enough_stock(self, api_client, store_db, customer_db):
+        assert not storage_m.Storage.objects.exists()
         data = {
             'store_id': store_db.pk,
             'item': '123',
@@ -43,6 +45,7 @@ class TestPurchaseCreation:
         assert json.loads(resp.content.decode('utf-8')) == {'non_field_error': 'Not enough stock'}
         assert len(resp.data) == 1
         assert not m.Purchase.objects.exists()
+        assert storage_m.Storage.objects.exists()
     
     def test_wrong_store(self, api_client, store_db2, customer_db, storage_db):
         assert store_db2 != storage_db.store
@@ -58,3 +61,14 @@ class TestPurchaseCreation:
         assert json.loads(resp.content.decode('utf-8')) == {'non_field_error': 'Not enough stock'}
         assert len(resp.data) == 1
         assert not m.Purchase.objects.exists()
+
+    def test_invalid_store(self, api_client, customer_db):
+        data = {
+            'store_id': 999,
+            'item': '123',
+            'quantity': 1,
+            'customer_id': customer_db.pk
+        }
+        resp = api_client.post(reverse('purchase-list'), data)
+        assert resp.status_code == status.HTTP_400_BAD_REQUEST
+        assert 'does not exist' in str(resp.data['store_id'])

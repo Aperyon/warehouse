@@ -23,9 +23,9 @@ import stores.views
 
 
 router = DefaultRouter()
-router.register('purchases/', purchases.views.PurchaseView, basename='purchase')
-router.register('stores/', stores.views.StoreViews, basename='store')
-router.register('customers/', customers.views.CustomerViews, basename='customer')
+router.register('purchases', purchases.views.PurchaseView, basename='purchase')
+router.register('stores', stores.views.StoreViews, basename='store')
+router.register('customers', customers.views.CustomerViews, basename='customer')
 
 urlpatterns = [
     path('admin/', admin.site.urls),

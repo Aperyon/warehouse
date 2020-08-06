@@ -10,6 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/3.1/ref/settings/
 """
 
+import os
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -20,7 +21,7 @@ BASE_DIR = Path(__file__).resolve(strict=True).parent.parent
 # See https://docs.djangoproject.com/en/3.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = '+j))2_=gxry=a5za*p*3r$%44f+g^!66@(#p=whezlkr*^-29h'
+SECRET_KEY = os.environ.get('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -125,3 +126,36 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/3.1/howto/static-files/
 
 STATIC_URL = '/static/'
+
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {
+        'json': {
+            '()': "json_log_formatter.JSONFormatter"
+        },
+        'simple': {
+            '()': "{levelname}"
+        }
+    },
+    'handlers': {
+        'console': {
+            'level': 'DEBUG',
+            'class': 'logging.StreamHandler',
+            'formatter': 'json'
+        },
+        'json_file': {
+            'level': 'DEBUG',
+            'class': 'logging.FileHandler',
+            'filename': '/code/api/logs/django-requests.json',
+            'formatter': 'json',
+            'filters': []
+        },
+    },
+    'loggers': {
+        'django.request': {
+            'handlers': ['console'],
+        }
+    }
+}

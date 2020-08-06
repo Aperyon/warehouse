@@ -65,8 +65,7 @@ services:
       - "8000:8000"
     volumes:
       - "./src/api:/code/api"
-    links:
-      - db
     environment:
       PYTHONUNBUFFERED: 1
+      SECRET_KEY: 'FAKE-SECRET-KEY'
     

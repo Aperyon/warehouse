@@ -8,6 +8,7 @@ authors = ["tamas.eger <egertamas@gmail.com>"]
 python = "^3.7"
 django = "^3.1"
 djangorestframework = "^3.11.1"
+JSON-log-formatter = "^0.3.0"
 
 [tool.poetry.dev-dependencies]
 pytest-django = "^3.9.0"
