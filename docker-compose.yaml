@@ -1,4 +1,4 @@
-version: "3.8"
+version: "3.3"
 services:
   db:
     image: postgres:13-alpine
@@ -54,3 +54,19 @@ services:
       PYTHONPATH: "/code/:$PYTHONPATH"
       KAFKA_URL: kafka:9092
       CSV_DIR: /code/csv_data/
+  api:
+    build:
+      context: ./src/api
+    container_name: api
+    working_dir: /code/api
+    entrypoint: ./manage.py
+    command: runserver 0.0.0.0:8000
+    ports:
+      - "8000:8000"
+    volumes:
+      - "./src/api:/code/api"
+    links:
+      - db
+    environment:
+      PYTHONUNBUFFERED: 1
+    
