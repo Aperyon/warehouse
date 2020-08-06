@@ -4,6 +4,7 @@ import pytest
 from rest_framework.test import APIClient
 
 from customers import models as customer_m
+from purchases import models as purchase_m
 from stores import models as store_m
 from storages import models as storage_m
 
@@ -45,4 +46,14 @@ def storage_db(store_db):
         store=store_db,
         item='1',
         stock=1000
+    )
+
+
+@pytest.fixture
+def purchase_db(store_db, customer_db):
+    return purchase_m.Purchase.objects.create(
+        store=store_db,
+        customer=customer_db,
+        item='1',
+        quantity=1
     )
