@@ -17,6 +17,7 @@ from django.contrib import admin
 from django.urls import include, path
 from rest_framework.routers import DefaultRouter
 
+import customers.views
 import purchases.views
 import stores.views
 
@@ -24,6 +25,7 @@ import stores.views
 router = DefaultRouter()
 router.register('purchases/', purchases.views.PurchaseView, basename='purchase')
 router.register('stores/', stores.views.StoreViews, basename='store')
+router.register('customers/', customers.views.CustomerViews, basename='customer')
 
 urlpatterns = [
     path('admin/', admin.site.urls),

@@ -41,6 +41,14 @@ def customer_db():
 
 
 @pytest.fixture
+def customer_db2():
+    return customer_m.Customer.objects.create(
+        name='Test Customer 2',
+        email='test2@email.com'
+    )
+
+
+@pytest.fixture
 def storage_db(store_db):
     return storage_m.Storage.objects.create(
         store=store_db,
